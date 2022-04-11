@@ -1,16 +1,19 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Alert, Box, Button, Card, CardActions, CardContent, Container, Divider, FormControl, FormGroup, FormHelperText, IconButton, Input, InputAdornment, InputLabel, OutlinedInput, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { RootState } from "../../store";
+import { resetErrorState, signUpUser } from "./sessionSlice";
 
 
 function Signup() {
   const emailRef = useRef<HTMLInputElement>();
   const passwordRef = useRef<HTMLInputElement>();
   const passwordConfirmationRef = useRef<HTMLInputElement>();
-  let errorMessages: string[]  = [];
-  const [errors, setErrors] = useState<string[]>([])
+  const errorMessages = useSelector((state: RootState) => state.session.errorMessages);
+
+  const [errors, setErrors] = useState<Array<string>>([])
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const loading = false;
   const navigate = useNavigate();
@@ -18,12 +21,11 @@ function Signup() {
 
   useEffect(() => {
     emailRef?.current?.focus();
-    if (errorMessages.length > 0) {
+    if (errorMessages !== undefined) {
       setErrors(errorMessages);
-      errorMessages = [];
-      // dispatch(resetErrorState());
+      dispatch(resetErrorState());
     }
-  })
+  }, [])
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -43,10 +45,10 @@ function Signup() {
       email: emailRef.current.value,
       password: passwordRef.current.value
     }
-    // const response = await dispatch(loginUser(payload)) as any;
-    const response = ["Oops, something went wrong"];
+    const response = await dispatch(signUpUser(payload)) as any;
+
     console.log(response);
-    if (errorMessages.length === 0) {
+    if (errorMessages.length > 0) {
       navigate("/");
     } else {
       return setErrors(errorMessages);
