@@ -1,12 +1,14 @@
 import React from 'react'
+import { useSelector } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
+import { RootState } from '../../store';
 
-function PublicOnlyRoute({ children  } : any ) {
-    const accessToken = false;
-    const loading = false;
-    const location = useLocation();
-    const fromLocation = (location.state as any)?.from;
-    const previousLocation = location.state ? fromLocation : { pathname: '/login'};
+function PublicOnlyRoute({ children  } : any) {
+  const accessToken = useSelector((state : RootState) => state.session.accessToken); 
+  const loading = useSelector((state : RootState) => state.session.loading);
+  const location = useLocation();
+  const fromLocation = (location.state as any)?.from;
+  const previousLocation = fromLocation ? fromLocation : { pathname: '/'};
 
   if (!accessToken && !loading) {
       return children;

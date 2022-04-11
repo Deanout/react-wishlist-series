@@ -1,15 +1,17 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Alert, Box, Button, Card, CardActions, CardContent, Container, Divider, FormControl, FormGroup, IconButton, Input, InputAdornment, InputLabel, OutlinedInput, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { RootState } from "../../store";
+import { loginUser, resetErrorState } from "./sessionSlice";
 
 
 function Login() {
   const emailRef = useRef<HTMLInputElement>();
   const passwordRef = useRef<HTMLInputElement>();
-  let errorMessages: string[]  = [];
-  const [errors, setErrors] = useState<string[]>([])
+  const errorMessages = useSelector((state: RootState) => state.session.errorMessages);
+  const [errors, setErrors] = useState<Array<string>>([])
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const loading = false;
   const navigate = useNavigate();
@@ -19,10 +21,9 @@ function Login() {
     emailRef?.current?.focus();
     if (errorMessages.length > 0) {
       setErrors(errorMessages);
-      errorMessages = [];
-      // dispatch(resetErrorState());
+      dispatch(resetErrorState());
     }
-  })
+  }, [])
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -37,8 +38,7 @@ function Login() {
       email: emailRef.current.value,
       password: passwordRef.current.value
     }
-    // const response = await dispatch(loginUser(payload)) as any;
-    const response = ["Oops, something went wrong"];
+    const response = await dispatch(loginUser(payload)) as any;
     console.log(response);
     if (errorMessages.length === 0) {
       navigate("/");
