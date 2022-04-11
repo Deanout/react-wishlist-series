@@ -3,6 +3,7 @@ import { Alert, Box, Button, Card, CardActions, CardContent, Container, Divider,
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { signUpUser } from "./sessionSlice";
 
 
 function Signup() {
@@ -43,8 +44,8 @@ function Signup() {
       email: emailRef.current.value,
       password: passwordRef.current.value
     }
-    // const response = await dispatch(loginUser(payload)) as any;
-    const response = ["Oops, something went wrong"];
+    const response = await dispatch(signUpUser(payload)) as any;
+
     console.log(response);
     if (errorMessages.length === 0) {
       navigate("/");
