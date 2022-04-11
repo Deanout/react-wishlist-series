@@ -1,0 +1,1 @@
+rake rswag:specs:swaggerize
