@@ -69,13 +69,7 @@ function UpdateProfile() {
       password: passwordRef?.current?.value,
       currentPassword: currentPasswordRef.current.value
     }
-    const response = await dispatch(updateProfile(payload)) as any;
-    console.log(response);
-    if (errorMessages.length > 0) {
-      navigate("/");
-    } else {
-      return setErrors(errorMessages);
-    }
+    dispatch(updateProfile(payload));
   }
 
   const passwordInput = <OutlinedInput id="password" type={showPassword ? 'text' : 'password'} inputRef={passwordRef} endAdornment={
