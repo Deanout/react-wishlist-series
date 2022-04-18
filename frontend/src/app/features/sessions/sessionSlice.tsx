@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { createUserWithEmailAndPassword, getCurrentUser, loginWithEmailAndPassword, logoutUserWithToken, requestAccessTokenWithRefreshToken } from "../../api/sessionAPI";
+import { createUserWithEmailAndPassword, getCurrentUser, loginWithEmailAndPassword, logoutUserWithToken, requestAccessTokenWithRefreshToken, updateUserProfile } from "../../api/sessionAPI";
 import { RootState, AppThunk } from "../../store";
 
 
@@ -13,6 +13,13 @@ export interface User {
 export interface UserLoginData {
   email: string;
   password: string;
+}
+
+export interface UserUpdateData {
+  currentPassword: string;
+  token: string | undefined;
+  email?: string;
+  password?: string;
 }
 
 interface AuthState {
@@ -60,6 +67,24 @@ export const signUpUser = createAsyncThunk(
       return rejectWithValue(response);
     }
     
+    // The value we return becomes the `fulfilled` action payload
+    return response;
+  }
+);
+
+export const updateProfile = createAsyncThunk(
+  "session/updateProfile",
+  async (payload: UserUpdateData, { rejectWithValue }) => {
+    const response = await updateUserProfile(
+      payload.currentPassword,
+      payload.token,
+      payload?.email,
+      payload?.password
+    );
+    if (response.errors) {
+      // The value we return becomes the `rejected` action payload
+      return rejectWithValue(response);
+    }
     // The value we return becomes the `fulfilled` action payload
     return response;
   }
@@ -251,6 +276,33 @@ export const sessionSlice = createSlice({
         state.loading = false;
         state.error = true;
         state.errorMessages = [action.payload.error];
+      })
+      .addCase(updateProfile.pending, (state) => {
+        state.loading = true;
+        state.error = false;
+        state.errorMessages = [];
+      })
+      .addCase(updateProfile.fulfilled, (state, action: any) => {
+        state.accessToken = action.payload.access_token;
+        state.refreshToken = action.payload.refresh_token;
+        state.expiresIn = action.payload.expires_in;
+        state.tokenType = action.payload.token_type;
+        state.currentUser = {
+          id: action.payload.id,
+          email: action.payload.email,
+          role: action.payload.role,
+          createdAt: action.payload.created_at,
+        };
+        storeRefreshToken(action.payload.refresh_token);
+
+        state.loading = false;
+        state.error = false;
+        state.errorMessages = [];
+      })
+      .addCase(updateProfile.rejected, (state, action: any) => {
+        state.loading = false;
+        state.error = true;
+        state.errorMessages = action.payload.errors;
       });
   },
 });
