@@ -4,6 +4,7 @@ const LOGIN_URL = "/oauth/token";
 const SIGNUP_URL = "/users";
 const LOGOUT_URL = "/oauth/revoke";
 const CURRENT_USER_URL = "/users/me";
+const UPDATE_PROFILE_URL = "/users";
 
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
 const CLIENT_SECRET = process.env.REACT_APP_CLIENT_SECRET;
@@ -42,6 +43,35 @@ export async function loginWithEmailAndPassword(
 
   return axios
     .post(LOGIN_URL, data)
+    .then((response: any) => {
+      return response.data;
+    })
+    .catch((error: any) => {
+      return error.response.data;
+    });
+}
+
+export async function updateUserProfile(
+  oldPassword: string,
+  token: string | undefined,
+  email?: string,
+  password?: string
+) {
+  const data = {
+    email: email,
+    password: password,
+    current_password: oldPassword,
+    client_id: CLIENT_ID,
+    client_secret: CLIENT_SECRET,
+  };
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  return axios
+    .patch(UPDATE_PROFILE_URL, data, config)
     .then((response: any) => {
       return response.data;
     })

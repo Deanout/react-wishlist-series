@@ -52,6 +52,11 @@ const ResponsiveAppBar = () => {
     handleCloseUserMenu();
     navigate('/logout');
   }
+  function handleUpdateProfileAccount(event: React.MouseEvent<HTMLLIElement, MouseEvent>) {
+    event?.preventDefault();
+    handleCloseUserMenu();
+    navigate('/update-profile');
+  }
 
   let sessionLinks;
   if (accessToken) {
@@ -80,6 +85,9 @@ const ResponsiveAppBar = () => {
       open={Boolean(anchorElUser)}
       onClose={handleCloseUserMenu}
     >
+        <MenuItem onClick={(event) => handleUpdateProfileAccount(event)}>
+          <Typography textAlign="center">Update Profile</Typography>
+        </MenuItem>
         <MenuItem onClick={(event) => handleLogout(event)}>
           <Typography textAlign="center">Logout</Typography>
         </MenuItem>
