@@ -40,15 +40,7 @@ function UpdateProfile() {
     const shouldUpdateProfile = shouldUpdateEmail || shouldUpdatePassword;
     if (!shouldUpdateProfile) {
       navigate("/");
-    } else {
-      console.log("should update profile");
-      console.log(shouldUpdateEmail);
-      console.log(shouldUpdatePassword);
-      console.log(shouldUpdateProfile);
-      console.log("Emailref:", !emailRef?.current?.value);
-      console.log("passwordref", passwordRef?.current?.value === "");
-      console.log("oldpassword", currentPasswordRef?.current?.value);
-    }
+    } 
     if (shouldUpdateEmail) {
       if (emailRef?.current?.value !== emailConfirmationRef?.current?.value) {
         return setErrors(["Emails do not match"]);
